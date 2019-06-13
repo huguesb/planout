@@ -1,6 +1,6 @@
 import hashlib
+from six.moves import range as xrange
 from .base import PlanOutOpSimple
-
 
 class PlanOutOpRandom(PlanOutOpSimple):
     LONG_SCALE = float(0xFFFFFFFFFFFFFFF)
@@ -21,7 +21,7 @@ class PlanOutOpRandom(PlanOutOpSimple):
             full_salt = '%s.%s' % (self.mapper.experiment_salt, salt)
         unit_str = '.'.join(map(str, self.getUnit(appended_unit)))
         hash_str = '%s.%s' % (full_salt, unit_str)
-        return int(hashlib.sha1(hash_str).hexdigest()[:15], 16)
+        return int(hashlib.sha1(hash_str.encode('ascii')).hexdigest()[:15], 16)
 
     def getUniform(self, min_val=0.0, max_val=1.0, appended_unit=None):
         zero_to_one = self.getHash(appended_unit) / PlanOutOpRandom.LONG_SCALE

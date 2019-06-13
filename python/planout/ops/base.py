@@ -6,15 +6,15 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 
 import logging
+from six import integer_types, string_types, with_metaclass
 from abc import ABCMeta, abstractmethod
 
 from .utils import Operators
 
 
-class PlanOutOp(object):
+class PlanOutOp(with_metaclass(ABCMeta, object)):
 
     """Abstract base class for PlanOut Operators"""
-    __metaclass__ = ABCMeta
     # all PlanOut operator have some set of args that act as required and
     # optional arguments
 
@@ -39,25 +39,25 @@ class PlanOutOp(object):
 
     def getArgInt(self, name):
         arg = self.getArgMixed(name)
-        assert isinstance(arg, (int, long)), \
+        assert isinstance(arg, integer_types), \
             "%s: %s must be an int." % (self.__class__, name)
         return arg
 
     def getArgFloat(self, name):
         arg = self.getArgMixed(name)
-        assert isinstance(arg, (int, long, float)), \
+        assert isinstance(arg, integer_types) or isinstance(arg, float), \
             "%s: %s must be a number." % (self.__class__, name)
         return float(arg)
 
     def getArgString(self, name):
         arg = self.getArgMixed(name)
-        assert isinstance(arg, (str, unicode)), \
+        assert isinstance(arg, string_types), \
             "%s: %s must be a string." % (self.__class__, name)
         return arg
 
     def getArgNumeric(self, name):
         arg = self.getArgMixed(name)
-        assert isinstance(arg, (int, float, long)), \
+        assert isinstance(arg, integer_types) or isinstance(arg, float), \
             "%s: %s must be a numeric." % (self.__class__, name)
         return arg
 
@@ -85,9 +85,7 @@ class PlanOutOp(object):
 # args as instance variables.  The user can then extend PlanOutOpSimple
 # and implement simpleExecute().
 
-class PlanOutOpSimple(PlanOutOp):
-    __metaclass__ = ABCMeta
-
+class PlanOutOpSimple(with_metaclass(ABCMeta, PlanOutOp)):
     def execute(self, mapper):
         self.mapper = mapper
         parameter_names = self.args.keys()
@@ -96,9 +94,7 @@ class PlanOutOpSimple(PlanOutOp):
         return self.simpleExecute()
 
 
-class PlanOutOpBinary(PlanOutOpSimple):
-    __metaclass__ = ABCMeta
-
+class PlanOutOpBinary(with_metaclass(ABCMeta, PlanOutOpSimple)):
     def simpleExecute(self):
         return self.binaryExecute(
             self.getArgMixed('left'),
@@ -118,9 +114,7 @@ class PlanOutOpBinary(PlanOutOpSimple):
         pass
 
 
-class PlanOutOpUnary(PlanOutOpSimple):
-    __metaclass__ = ABCMeta
-
+class PlanOutOpUnary(with_metaclass(ABCMeta, PlanOutOpSimple)):
     def simpleExecute(self):
         return self.unaryExecute(self.getArgMixed('value'))
 
@@ -135,9 +129,7 @@ class PlanOutOpUnary(PlanOutOpSimple):
         pass
 
 
-class PlanOutOpCommutative(PlanOutOpSimple):
-    __metaclass__ = ABCMeta
-
+class PlanOutOpCommutative(with_metaclass(ABCMeta, PlanOutOpSimple)):
     def simpleExecute(self):
         assert ('values' in self.args), "expected argument 'values'"
         return self.commutativeExecute(self.getArgList('values'))

@@ -1,3 +1,5 @@
+from __future__ import print_function
+from six import iteritems, with_metaclass
 from abc import ABCMeta, abstractmethod, abstractproperty
 from operator import itemgetter
 
@@ -24,9 +26,7 @@ def requires_default_experiment(f):
     return wrapped_f
 
 
-class Namespace(object):
-    __metaclass__ = ABCMeta
-
+class Namespace(with_metaclass(ABCMeta, object)):
     def __init__(self, **kwargs):
         pass
 
@@ -59,9 +59,7 @@ class Namespace(object):
         pass
 
 
-class SimpleNamespace(Namespace):
-    __metaclass__ = ABCMeta
-
+class SimpleNamespace(with_metaclass(ABCMeta, Namespace)):
     def __init__(self, **kwargs):
         self.name = self.__class__  # default name is the class name
         self.inputs = kwargs
@@ -116,11 +114,11 @@ class SimpleNamespace(Namespace):
     def add_experiment(self, name, exp_object, segments):
         num_avail = len(self.available_segments)
         if num_avail < segments:
-            print 'error: %s segments requested, only %s available.' % \
-                (segments, num_avail)
+            print('error: %s segments requested, only %s available.' % \
+                (segments, num_avail))
             return False
         if name in self.current_experiments:
-            print 'error: there is already an experiment called %s.' % name
+            print('error: there is already an experiment called %s.' % name)
             return False
 
         # randomly select the given number of segments from all available
@@ -140,11 +138,11 @@ class SimpleNamespace(Namespace):
 
     def remove_experiment(self, name):
         if name not in self.current_experiments:
-            print 'error: there is no experiment called %s.' % name
+            print('error: there is no experiment called %s.' % name)
             return False
 
         segments_to_free = \
-            [s for s, n in self.segment_allocations.iteritems() if n == name]
+            [s for s, n in iteritems(self.segment_allocations) if n == name]
 
         for segment in segments_to_free:
             del self.segment_allocations[segment]

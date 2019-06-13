@@ -1,3 +1,4 @@
+from six.moves import reduce
 from .base import (
     PlanOutOp,
     PlanOutOpSimple,

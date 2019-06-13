@@ -11,6 +11,7 @@ import re
 import json
 import inspect
 import hashlib
+from six import with_metaclass
 from abc import ABCMeta, abstractmethod
 import __main__ as main
 
@@ -39,11 +40,9 @@ def requires_exposure_logging(f):
     return wrapped_f
 
 
-class Experiment(object):
+class Experiment(with_metaclass(ABCMeta, object)):
 
     """Abstract base class for PlanOut experiments"""
-    __metaclass__ = ABCMeta
-
     logger_configured = False
 
     def __init__(self, **inputs):
@@ -240,11 +239,10 @@ class DefaultExperiment(Experiment):
         return {}
 
 
-class SimpleExperiment(Experiment):
+class SimpleExperiment(with_metaclass(ABCMeta, Experiment)):
 
     """Simple experiment base class which exposure logs to a file"""
 
-    __metaclass__ = ABCMeta
     # We only want to set up the logger once, the first time the object is
     # instantiated. We do this by maintaining this class variable.
     logger = {}
@@ -279,10 +277,9 @@ class SimpleExperiment(Experiment):
         return False
 
 
-class SimpleInterpretedExperiment(SimpleExperiment):
+class SimpleInterpretedExperiment(with_metaclass(ABCMeta, SimpleExperiment)):
 
     """A variant of SimpleExperiment that loads data from a given script"""
-    __metaclass__ = ABCMeta
 
     def loadScript(self):
         """loads deserialized PlanOut script to be executed by the interpreter"""
