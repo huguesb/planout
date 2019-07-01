@@ -134,7 +134,7 @@ class Experiment(with_metaclass(ABCMeta, object)):
             # src doesn't count first line of code, which includes function
             # name
             src = ''.join(inspect.getsourcelines(self.assign)[0][1:])
-            return hashlib.sha1(src).hexdigest()[:8]
+            return hashlib.sha1(src.encode('utf-8')).hexdigest()[:8]
         # if we're running in an interpreter, don't worry about it
         else:
             return None
@@ -311,4 +311,4 @@ class SimpleInterpretedExperiment(with_metaclass(ABCMeta, SimpleExperiment)):
         # self.script must be a dictionary
         assert hasattr(self, 'script') and type(self.script) == dict
 
-        return hashlib.sha1(json.dumps(self.script)).hexdigest()[:8]
+        return hashlib.sha1(json.dumps(self.script).encode('utf-8')).hexdigest()[:8]
